@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from config import HashConfig, generate_collision_keys
 from hash_tables import create_hash_table
 
-CHART_PATH = Path(__file__).parent / "robin_hood_trace.png"
+CHART_PATH = Path(__file__).resolve().parent.parent / "docs" / "robin_hood_trace.png"
 
 
 if __name__ == "__main__":
@@ -44,6 +44,7 @@ if __name__ == "__main__":
     ax_probes.set_ylabel("Count")
     ax_probes.legend()
 
+    CHART_PATH.parent.mkdir(exist_ok=True)
     fig.savefig(CHART_PATH)
     print(f"Chart saved: {CHART_PATH.name}")
     plt.show()

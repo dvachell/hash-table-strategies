@@ -1,0 +1,24 @@
+[project]
+name = "hash-table-strategies"
+version = "0.1.0"
+description = "Robin Hood hashing vs double hashing: open-addressing hash tables with probe statistics"
+readme = "README.md"
+authors = [
+    { name = "dvachell", email = "lewbabajew@gmail.com" }
+]
+requires-python = ">=3.15"
+dependencies = [
+    "matplotlib>=3.11.2",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.24,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]

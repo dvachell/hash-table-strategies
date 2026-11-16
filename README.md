@@ -1,5 +1,7 @@
 # Hash Table Strategies
 
+![CI](https://github.com/dvachell/hash-table-strategies/actions/workflows/ci.yml/badge.svg)
+
 Two open-addressing hash tables in pure Python, **Robin Hood hashing** and
 **double hashing**, behind one interface, with built-in probe statistics to
 compare them.

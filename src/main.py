@@ -1,8 +1,8 @@
 """Console demo: config validation, the Robin Hood table, collected
 statistics, and an average-probes comparison of both strategies."""
+
 from config import HashConfig, generate_collision_keys
 from hash_tables import HashTableMeta, create_hash_table
-import double_hashing  # importing the module registers DoubleHashingTable through the metaclass
 
 
 def run_workload(table, keys: list[int]) -> None:
@@ -39,8 +39,10 @@ print(table.snapshot())
 table = create_hash_table(HashConfig(strategy="robin_hood", capacity=13, max_load=0.5))
 run_workload(table, keys)
 stats = table.stats
-print(f"operations={stats.operations} probes={stats.probes} collisions={stats.collisions} "
-      f"rehashes={stats.rehashes} structural_events={stats.structural_events}")
+print(
+    f"operations={stats.operations} probes={stats.probes} collisions={stats.collisions} "
+    f"rehashes={stats.rehashes} structural_events={stats.structural_events}"
+)
 print([record["probes"] for record in stats.history])
 
 # Robin Hood vs double hashing on the same workload

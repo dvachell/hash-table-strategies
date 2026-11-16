@@ -1,5 +1,6 @@
 """Hash table configuration validated by descriptors, plus a key generator
 for building deterministic collision scenarios."""
+
 import random
 from typing import Any
 
@@ -36,9 +37,13 @@ class PrimeCapacity(ValidatedField):
 
     def validate(self, value) -> None:
         if not isinstance(value, int):
-            raise TypeError(f"{self.public_name} must be int, got {type(value).__name__}")
+            raise TypeError(
+                f"{self.public_name} must be int, got {type(value).__name__}"
+            )
         if value < self.min_value:
-            raise ValueError(f"{self.public_name} must be >= {self.min_value}, got {value}")
+            raise ValueError(
+                f"{self.public_name} must be >= {self.min_value}, got {value}"
+            )
         if not is_prime(value):
             raise ValueError(f"{self.public_name} must be a prime number, got {value}")
 
@@ -48,7 +53,9 @@ class OpenUnitFloat(ValidatedField):
 
     def validate(self, value) -> None:
         if not isinstance(value, (int, float)):
-            raise TypeError(f"{self.public_name} must be a number, got {type(value).__name__}")
+            raise TypeError(
+                f"{self.public_name} must be a number, got {type(value).__name__}"
+            )
         if not 0 < value < 1:
             raise ValueError(f"{self.public_name} must be in (0, 1), got {value}")
 
@@ -61,9 +68,13 @@ class Choice(ValidatedField):
 
     def validate(self, value) -> None:
         if not isinstance(value, str):
-            raise TypeError(f"{self.public_name} must be str, got {type(value).__name__}")
+            raise TypeError(
+                f"{self.public_name} must be str, got {type(value).__name__}"
+            )
         if value not in self.choices:
-            raise ValueError(f"{self.public_name} must be one of {self.choices}, got {value!r}")
+            raise ValueError(
+                f"{self.public_name} must be one of {self.choices}, got {value!r}"
+            )
 
 
 class HashConfig:
@@ -74,8 +85,9 @@ class HashConfig:
     max_load = OpenUnitFloat()
     strategy = Choice("robin_hood", "double_hashing")
 
-    def __init__(self, capacity: int = 11, max_load: float = 0.75,
-                 strategy: str = "robin_hood") -> None:
+    def __init__(
+        self, capacity: int = 11, max_load: float = 0.75, strategy: str = "robin_hood"
+    ) -> None:
         self.capacity = capacity
         self.max_load = max_load
         self.strategy = strategy
@@ -108,7 +120,9 @@ def next_prime(n: int) -> int:
     return n
 
 
-def generate_collision_keys(count: int, capacity: int, groups: int, seed: int) -> list[int]:
+def generate_collision_keys(
+    count: int, capacity: int, groups: int, seed: int
+) -> list[int]:
     """Deterministically generate `count` distinct keys that map to only
     `groups` home positions (k % capacity), to force collisions."""
     if count < 1:
@@ -125,8 +139,8 @@ def generate_collision_keys(count: int, capacity: int, groups: int, seed: int) -
 
     keys = []
     for i in range(count):
-        residue = residues[i % groups]          # cycle through the residues
-        multiple = i // groups + 1              # while the multiple keeps growing
+        residue = residues[i % groups]  # cycle through the residues
+        multiple = i // groups + 1  # while the multiple keeps growing
         keys.append(residue + multiple * capacity)
 
     rng.shuffle(keys)

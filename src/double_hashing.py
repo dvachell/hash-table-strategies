@@ -1,7 +1,8 @@
 """Double hashing open-addressing table with tombstone deletion."""
+
 from config import next_prime
-from hash_tables import HashTable, Entry
 from hash_profiling import profile_hashing
+from hash_tables import Entry, HashTable
 
 # Marks a deleted slot: lookups must probe past it, inserts may reuse it.
 DELETED = object()
@@ -93,7 +94,9 @@ class DoubleHashingTable(HashTable):
 
     def rehash(self, new_capacity: int) -> None:
         """Reinsert live entries into a table of new_capacity; tombstones are dropped."""
-        entries = [entry for entry in self._slots if entry is not None and entry is not DELETED]
+        entries = [
+            entry for entry in self._slots if entry is not None and entry is not DELETED
+        ]
         self.capacity = new_capacity
         self._slots = [None] * new_capacity
         self.size = 0
@@ -102,5 +105,7 @@ class DoubleHashingTable(HashTable):
 
     def snapshot(self) -> tuple:
         """Slots as (key, None), "DEL" for tombstones, or None."""
-        return tuple("DEL" if entry is DELETED else None if entry is None else (entry.key, None)
-                     for entry in self._slots)
+        return tuple(
+            "DEL" if entry is DELETED else None if entry is None else (entry.key, None)
+            for entry in self._slots
+        )

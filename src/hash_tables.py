@@ -1,5 +1,8 @@
 """Common hash table base, metaclass registry, factory,
 and the Robin Hood open-addressing table."""
+
+from typing import ClassVar
+
 from config import HashConfig, next_prime
 from hash_profiling import profile_hashing
 
@@ -18,9 +21,18 @@ class HashTableMeta(type):
     """Checks at class-definition time that a concrete table implements
     the full interface, and registers it under its `strategy` name."""
 
-    registry = {}
-    required = ("strategy", "max_supported_load", "profiled_events",
-                "insert", "get", "remove", "inspect", "rehash")
+    strategy: str
+    registry: ClassVar[dict[str, type]] = {}
+    required = (
+        "strategy",
+        "max_supported_load",
+        "profiled_events",
+        "insert",
+        "get",
+        "remove",
+        "inspect",
+        "rehash",
+    )
 
     def __new__(mcls, name, bases, namespace, abstract=False):
         cls = super().__new__(mcls, name, bases, namespace)
@@ -29,7 +41,7 @@ class HashTableMeta(type):
         for attr in mcls.required + tuple(getattr(cls, "profiled_events", ())):
             if not hasattr(cls, attr):
                 raise TypeError(f"{name}: missing required member {attr}")
-        strategy = getattr(cls, "strategy")
+        strategy = cls.strategy
         if strategy in mcls.registry:
             raise TypeError(f"strategy {strategy} is already registered")
         mcls.registry[strategy] = cls
@@ -58,7 +70,9 @@ class HashTable(metaclass=HashTableMeta, abstract=True):
 
     def snapshot(self) -> tuple:
         """Read-only view of the slots as (key, dib) or None."""
-        return tuple(None if entry is None else (entry.key, entry.dib) for entry in self._slots)
+        return tuple(
+            None if entry is None else (entry.key, entry.dib) for entry in self._slots
+        )
 
 
 def create_hash_table(config: HashConfig):
@@ -67,7 +81,9 @@ def create_hash_table(config: HashConfig):
     if cls is None:
         raise ValueError(f"no table class for strategy {config.strategy}")
     if config.max_load > cls.max_supported_load:
-        raise ValueError(f"max_load {config.max_load} > {cls.max_supported_load} for {config.strategy}")
+        raise ValueError(
+            f"max_load {config.max_load} > {cls.max_supported_load} for {config.strategy}"
+        )
     return cls(config)
 
 

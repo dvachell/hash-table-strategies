@@ -1,10 +1,13 @@
 import pytest
+
 from config import HashConfig, generate_collision_keys
 from hash_tables import HashTable, HashTableMeta, RobinHoodTable, create_hash_table
 
 
 def make_table(capacity: int = 7, max_load: float = 0.5):
-    return create_hash_table(HashConfig(strategy="robin_hood", capacity=capacity, max_load=max_load))
+    return create_hash_table(
+        HashConfig(strategy="robin_hood", capacity=capacity, max_load=max_load)
+    )
 
 
 def test_config_and_generator():
@@ -48,10 +51,12 @@ def test_meta_and_profiling():
     assert HashTableMeta.registry["robin_hood"] is RobinHoodTable
 
     with pytest.raises(TypeError):
+
         class Broken(HashTable):
             strategy = "broken"
             max_supported_load = 0.5
             profiled_events = ()
+
     assert "broken" not in HashTableMeta.registry
 
     table = make_table()

@@ -1,5 +1,6 @@
 """Class decorator that adds probe/collision statistics to a hash table
 without touching the algorithm code."""
+
 import functools
 
 
@@ -24,7 +25,9 @@ def profile_hashing(cls):
     - rehashes,
     - structural events (methods listed in cls.profiled_events),
     and record per-operation deltas for insert/get/remove."""
-    required = ("insert", "get", "remove", "inspect", "rehash") + tuple(getattr(cls, "profiled_events", ()))
+    required = ("insert", "get", "remove", "inspect", "rehash") + tuple(
+        getattr(cls, "profiled_events", ())
+    )
     for name in required:
         if not callable(getattr(cls, name, None)):
             raise TypeError(f"{cls.__name__}: missing method {name}")
@@ -49,6 +52,7 @@ def wrap_init(method):
     def wrapper(self, *args, **kwargs):
         self.stats = Stats()
         method(self, *args, **kwargs)
+
     return wrapper
 
 
@@ -60,6 +64,7 @@ def wrap_inspect(method):
         if state == "other":
             self.stats.collisions += 1
         return state
+
     return wrapper
 
 
@@ -68,6 +73,7 @@ def wrap_counter(method, counter: str):
     def wrapper(self, *args, **kwargs):
         setattr(self.stats, counter, getattr(self.stats, counter) + 1)
         return method(self, *args, **kwargs)
+
     return wrapper
 
 
@@ -75,15 +81,22 @@ def wrap_operation(method):
     @functools.wraps(method)
     def wrapper(self, key, *args):
         stats = self.stats
-        probes, collisions, events = stats.probes, stats.collisions, stats.structural_events
+        probes, collisions, events = (
+            stats.probes,
+            stats.collisions,
+            stats.structural_events,
+        )
         result = method(self, key, *args)
         stats.operations += 1
-        stats.history.append({
-            "operation": method.__name__,
-            "key": key,
-            "probes": stats.probes - probes,
-            "collisions": stats.collisions - collisions,
-            "structural_events": stats.structural_events - events,
-        })
+        stats.history.append(
+            {
+                "operation": method.__name__,
+                "key": key,
+                "probes": stats.probes - probes,
+                "collisions": stats.collisions - collisions,
+                "structural_events": stats.structural_events - events,
+            }
+        )
         return result
+
     return wrapper

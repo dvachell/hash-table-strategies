@@ -1,7 +1,10 @@
 """Plot a small Robin Hood table step by step: slot contents (key / DIB)
 after each operation, and probes/collisions per operation."""
+
 from pathlib import Path
+
 import matplotlib.pyplot as plt
+
 from config import HashConfig, generate_collision_keys
 from hash_tables import create_hash_table
 
@@ -9,7 +12,9 @@ CHART_PATH = Path(__file__).resolve().parent.parent / "docs" / "robin_hood_trace
 
 
 if __name__ == "__main__":
-    table = create_hash_table(HashConfig(strategy="robin_hood", capacity=13, max_load=0.5))
+    table = create_hash_table(
+        HashConfig(strategy="robin_hood", capacity=13, max_load=0.5)
+    )
     keys = generate_collision_keys(6, 13, 2, 7)
     snapshots = []
     for key in keys:
@@ -31,7 +36,9 @@ if __name__ == "__main__":
     for row, snapshot in enumerate(snapshots):
         for col, slot in enumerate(snapshot):
             if slot is not None:
-                ax_slots.text(col, row, f"{slot[0]}\n{slot[1]}", ha="center", va="center")
+                ax_slots.text(
+                    col, row, f"{slot[0]}\n{slot[1]}", ha="center", va="center"
+                )
     ax_slots.set_xlim(-1, table.capacity)
     ax_slots.set_ylim(len(snapshots), -1)
     ax_slots.set_xlabel("Slot index")
